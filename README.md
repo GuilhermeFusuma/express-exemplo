@@ -1,2 +1,2 @@
 # express-exemplo
-exemplo de express para enviar json usando APIs e middlewares
+exemplo de express para criar uma página dinâmica usando rotas e middlewares
