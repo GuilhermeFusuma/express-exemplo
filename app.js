@@ -8,14 +8,26 @@ app.set('views', './views'); // define a pasta das views
 
 app.use(express.json()); // middleware para interpretar json
 app.use(express.static('public')); // middleware para configurar uma pasta de arquivos estáticos
-
 app.use(cors()); // middleware para habilitar cors (libera acesso de qualquer domínio)
-app.use(logger); // habilita o middleware logger
 
+// habilita o middleware logger
+app.use(logger); 
 // configurações do middleware que registra todas as solicitações (mostra o método e o caminho) 
 function logger(req, res, next) { 
   console.log(req.method, req.originalUrl); // registra no console toda solicitação
   next(); // função necessária para o próximo middleware rodar
+}
+
+// middlelware que 
+function blockTime(req, res, next) {
+  let horaAtual = new Date().getHours();
+
+  // checando se o horário atual está entre o horário proibido
+  if (horaAtual > 22 || horaAtual < 6) {
+    res.send('Acesso proibido neste horário');
+  }
+  // Permite que o próximo middleware seja chamado
+  next()
 }
 
 const produtos = require('./produtos.json');
