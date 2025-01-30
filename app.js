@@ -20,18 +20,11 @@ function logger(req, res, next) {
 
 const produtos = require('./produtos.json');
 
-// rota raiz
-app.get('/', (req, res) => {
+app.get('/produtos', (req, res) => {
+  // variável que será enviada para o cliente
   let conteudo = '';
   produtos.forEach((produto) => {
-    conteudo += `
-    <div class='produto'>
-      <span>${produto.id}</span>
-      <span>${produto.nome}</span>
-      <span>${produto.valor}R$</span>
-      <img src="${produto.imagem}" alt="${produto.nome}">
-    </div>
-    `
+    conteudo += criarHtml(produto);
   });
   
   // envia ao cliente o arquivo index.ejs junto do conteúdo da página
@@ -41,7 +34,42 @@ app.get('/', (req, res) => {
    });
 });
 
+// rota para encontrar um produto específico
+app.get('/produtos/:id', (req, res) => {
+  let conteudo = '';
+
+  // garantindo que o id pedido é um dos ids dos produtos
+  let parsedId = parseInt(req.params.id);
+  if (isNaN(parsedId)) {
+    conteudo = 'O id não é um número';
+  } else {
+    // lógica para encontrar o produto com o id procurado
+    let requestedProduct = produtos.find((produto) => produto.id === parsedId);
+    conteudo = criarHtml(requestedProduct);
+  };
+
+  // envia ao cliente o arquivo index.ejs junto do conteúdo da página
+  res.render('index', { 
+    content: conteudo,
+    title: 'Exemplo express js'
+  });
+});
+
+
+
 // faz o server ouvir toda vez que a porta definida na variável "port" seja usada
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
+
+ // função para criar o html para cada produto
+function criarHtml(produto) {
+  return `
+    <div class='produto'>
+      <span>${produto.id}</span>
+      <span>${produto.nome}</span>
+      <span>${produto.valor}R$</span>
+      <img src="${produto.imagem}" alt="${produto.nome}">
+    </div>
+    `
+};
