@@ -18,14 +18,15 @@ function logger(req, res, next) {
   next(); // função necessária para o próximo middleware rodar
 }
 
-// middlelware que 
+// middlelware que bloqueia horários específicos
 function blockTime(req, res, next) {
   let horaAtual = new Date().getHours();
 
   // checando se o horário atual está entre o horário proibido
-  if (horaAtual > 22 || horaAtual < 6) {
+  if (horaAtual >= 20 || horaAtual < 6) {
     res.send('Acesso proibido neste horário');
   }
+
   // Permite que o próximo middleware seja chamado
   next()
 }
@@ -67,7 +68,10 @@ app.get('/produtos/:id', (req, res) => {
   });
 });
 
-
+// Rota para conseguir apenas o json dos produtos usando o middleware que bloqueia horários específicos
+app.get('/json/produtos', blockTime, (req, res) => {
+  res.status(200).json(produtos);
+});
 
 // faz o server ouvir toda vez que a porta definida na variável "port" seja usada
 app.listen(port, () => {
